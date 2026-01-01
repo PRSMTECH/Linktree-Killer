@@ -1,20 +1,32 @@
 'use client'
 
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   Twitch,
   Youtube,
   Instagram,
-  MessageCircle,
   ExternalLink,
   Globe,
   Sparkles,
-  Github
+  Github,
+  Zap,
+  Star,
+  Heart
 } from 'lucide-react'
 
 // PRSMTECH Logo from Supabase Storage
 const PRSMTECH_LOGO = 'https://eiflgtwltjapsgjvhzxf.supabase.co/storage/v1/object/public/media/images/prsmtech-logo-favicon.jpeg'
+
+// Typing animation titles
+const typingTitles = [
+  'Tech Entrepreneur',
+  'Content Creator',
+  'Software Developer',
+  'Streamer',
+  'CEO of PRSMTECH'
+]
 
 // Social media links data
 const socialLinks = [
@@ -120,49 +132,324 @@ const socialLinks = [
   },
 ]
 
+// Floating particles component
+function FloatingParticles() {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number; duration: number }>>([])
+
+  useEffect(() => {
+    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 1,
+      delay: Math.random() * 5,
+      duration: Math.random() * 10 + 10,
+    }))
+    setParticles(newParticles)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full bg-prsmtech-accent/30"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: particle.size,
+            height: particle.size,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            x: [0, Math.random() * 20 - 10, 0],
+            opacity: [0.2, 0.8, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Animated background stars
+function AnimatedStars() {
+  const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number }>>([])
+
+  useEffect(() => {
+    const newStars = Array.from({ length: 50 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 1,
+      delay: Math.random() * 3,
+    }))
+    setStars(newStars)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {stars.map((star) => (
+        <motion.div
+          key={star.id}
+          className="absolute"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 2 + Math.random() * 2,
+            repeat: Infinity,
+            delay: star.delay,
+          }}
+        >
+          <Star
+            className="text-prsmtech-light/40"
+            style={{ width: star.size * 8, height: star.size * 8 }}
+            fill="currentColor"
+          />
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+// Typing text animation hook
+function useTypingAnimation(texts: string[], typingSpeed = 100, deletingSpeed = 50, pauseTime = 2000) {
+  const [displayText, setDisplayText] = useState('')
+  const [textIndex, setTextIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const currentText = texts[textIndex]
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        if (displayText.length < currentText.length) {
+          setDisplayText(currentText.slice(0, displayText.length + 1))
+        } else {
+          setTimeout(() => setIsDeleting(true), pauseTime)
+        }
+      } else {
+        if (displayText.length > 0) {
+          setDisplayText(displayText.slice(0, -1))
+        } else {
+          setIsDeleting(false)
+          setTextIndex((prev) => (prev + 1) % texts.length)
+        }
+      }
+    }, isDeleting ? deletingSpeed : typingSpeed)
+
+    return () => clearTimeout(timeout)
+  }, [displayText, isDeleting, textIndex, texts, typingSpeed, deletingSpeed, pauseTime])
+
+  return displayText
+}
+
+// 3D tilt card component
+function TiltCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const mouseXSpring = useSpring(x, { stiffness: 500, damping: 50 })
+  const mouseYSpring = useSpring(y, { stiffness: 500, damping: 50 })
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7deg', '-7deg'])
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7deg', '7deg'])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return
+
+    const rect = ref.current.getBoundingClientRect()
+    const width = rect.width
+    const height = rect.height
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
+
+    const xPct = mouseX / width - 0.5
+    const yPct = mouseY / height - 0.5
+
+    x.set(xPct)
+    y.set(yPct)
+  }, [x, y])
+
+  const handleMouseLeave = useCallback(() => {
+    x.set(0)
+    y.set(0)
+  }, [x, y])
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d',
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// Ripple effect on click
+function useRipple() {
+  const [ripples, setRipples] = useState<Array<{ x: number; y: number; id: number }>>([])
+
+  const addRipple = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const id = Date.now()
+
+    setRipples(prev => [...prev, { x, y, id }])
+    setTimeout(() => {
+      setRipples(prev => prev.filter(r => r.id !== id))
+    }, 1000)
+  }, [])
+
+  return { ripples, addRipple }
+}
+
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
+      staggerChildren: 0.08,
+      delayChildren: 0.2,
     },
   },
 }
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 30, opacity: 0, scale: 0.9 },
   visible: {
     y: 0,
     opacity: 1,
+    scale: 1,
     transition: {
       type: 'spring',
       stiffness: 100,
+      damping: 12,
     },
   },
 }
 
 const floatVariants = {
   animate: {
-    y: [0, -10, 0],
+    y: [0, -15, 0],
     transition: {
-      duration: 6,
+      duration: 4,
       repeat: Infinity,
       ease: 'easeInOut',
     },
   },
 }
 
+const glowVariants = {
+  animate: {
+    boxShadow: [
+      '0 0 20px rgba(99, 102, 241, 0.3)',
+      '0 0 40px rgba(139, 92, 246, 0.4)',
+      '0 0 20px rgba(168, 85, 247, 0.3)',
+      '0 0 40px rgba(99, 102, 241, 0.4)',
+      '0 0 20px rgba(99, 102, 241, 0.3)',
+    ],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+}
+
+const pulseRingVariants = {
+  animate: {
+    scale: [1, 1.2, 1],
+    opacity: [0.5, 0, 0.5],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeOut',
+    },
+  },
+}
+
 export default function Home() {
+  const typingText = useTypingAnimation(typingTitles, 80, 40, 1500)
+  const { ripples, addRipple } = useRipple()
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [clickedLink, setClickedLink] = useState<string | null>(null)
+
+  // Handle link click with animation
+  const handleLinkClick = (url: string) => {
+    setClickedLink(url)
+    setTimeout(() => setClickedLink(null), 300)
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 relative overflow-hidden">
+      {/* Animated background elements */}
+      <AnimatedStars />
+      <FloatingParticles />
+
       {/* Animated background gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-prsmtech-primary/20 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-prsmtech-secondary/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-prsmtech-accent/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '4s' }} />
+        <motion.div
+          className="absolute -top-40 -right-40 w-64 sm:w-80 h-64 sm:h-80 bg-prsmtech-primary/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-64 sm:w-80 h-64 sm:h-80 bg-prsmtech-secondary/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -20, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 1,
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-prsmtech-accent/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.4, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
       </div>
 
       <motion.div
@@ -173,131 +460,324 @@ export default function Home() {
       >
         {/* Profile Section */}
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-8 sm:mb-10"
           variants={floatVariants}
           animate="animate"
         >
           {/* Avatar with PRSMTECH Logo */}
-          <motion.div
-            className="w-32 h-32 mx-auto mb-6 relative"
-            variants={itemVariants}
-          >
-            <div className="w-full h-full rounded-full bg-gradient-to-br from-prsmtech-primary via-prsmtech-secondary to-prsmtech-accent p-1">
-              <div className="w-full h-full rounded-full overflow-hidden bg-prsmtech-dark">
-                <Image
-                  src={PRSMTECH_LOGO}
-                  alt="Jordan Ward - PRSMTECH"
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                  priority
-                />
-              </div>
-            </div>
-            {/* Online indicator */}
-            <div className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 rounded-full border-2 border-prsmtech-dark animate-pulse" />
-          </motion.div>
+          <TiltCard className="mx-auto mb-6">
+            <motion.div
+              className="w-28 h-28 sm:w-32 sm:h-32 mx-auto relative"
+              variants={itemVariants}
+            >
+              {/* Animated ring around avatar */}
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-prsmtech-accent/50"
+                variants={pulseRingVariants}
+                animate="animate"
+              />
+              <motion.div
+                className="absolute -inset-2 rounded-full border border-prsmtech-primary/30"
+                variants={pulseRingVariants}
+                animate="animate"
+                transition={{ delay: 0.5 }}
+              />
+
+              {/* Glowing border */}
+              <motion.div
+                className="w-full h-full rounded-full bg-gradient-to-br from-prsmtech-primary via-prsmtech-secondary to-prsmtech-accent p-1"
+                variants={glowVariants}
+                animate="animate"
+              >
+                <div className="w-full h-full rounded-full overflow-hidden bg-prsmtech-dark relative">
+                  <Image
+                    src={PRSMTECH_LOGO}
+                    alt="Jordan Ward - PRSMTECH"
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    priority
+                  />
+                  {/* Shine effect on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full" />
+                </div>
+              </motion.div>
+
+              {/* Online indicator with pulse */}
+              <motion.div
+                className="absolute bottom-2 right-2 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full border-2 border-prsmtech-dark"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  boxShadow: [
+                    '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                    '0 0 0 10px rgba(34, 197, 94, 0)',
+                    '0 0 0 0 rgba(34, 197, 94, 0)',
+                  ],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            </motion.div>
+          </TiltCard>
 
           {/* Name & Title */}
           <motion.h1
-            className="text-3xl font-bold mb-2 bg-gradient-to-r from-white via-prsmtech-light to-white bg-clip-text text-transparent"
+            className="text-2xl sm:text-3xl font-bold mb-2 relative inline-block"
             variants={itemVariants}
           >
-            Jordan Ward
+            <span className="bg-gradient-to-r from-white via-prsmtech-light to-white bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">
+              Jordan Ward
+            </span>
+            <motion.span
+              className="absolute -right-6 -top-1"
+              animate={{ rotate: [0, 14, -8, 14, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+            </motion.span>
           </motion.h1>
+
           <motion.p
-            className="text-lg text-prsmtech-light/80 mb-2 flex items-center justify-center gap-2"
+            className="text-base sm:text-lg text-prsmtech-light/80 mb-2 flex items-center justify-center gap-2"
             variants={itemVariants}
           >
-            <Sparkles className="w-4 h-4 text-prsmtech-accent" />
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            >
+              <Sparkles className="w-4 h-4 text-prsmtech-accent" />
+            </motion.span>
             CEO of PRSMTECH
-            <Sparkles className="w-4 h-4 text-prsmtech-accent" />
+            <motion.span
+              animate={{ rotate: -360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            >
+              <Sparkles className="w-4 h-4 text-prsmtech-accent" />
+            </motion.span>
           </motion.p>
-          <motion.p
-            className="text-sm text-gray-400"
+
+          {/* Typing animation */}
+          <motion.div
+            className="h-6 flex items-center justify-center"
             variants={itemVariants}
           >
-            Tech Entrepreneur • Content Creator • Developer
-          </motion.p>
+            <span className="text-sm text-gray-400">
+              {typingText}
+              <motion.span
+                className="inline-block w-0.5 h-4 bg-prsmtech-accent ml-0.5"
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+              />
+            </span>
+          </motion.div>
         </motion.div>
 
         {/* Social Links */}
         <motion.div
-          className="space-y-3 mb-8"
+          className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8"
           variants={containerVariants}
         >
           {socialLinks.map((link, index) => {
             const Icon = link.icon
+            const isHovered = hoveredIndex === index
+            const isClicked = clickedLink === link.url
+
             return (
-              <motion.a
-                key={`${link.platform}-${link.username}`}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-card glass flex items-center gap-4 p-4 rounded-xl w-full group cursor-pointer"
-                data-platform={link.platform.toLowerCase()}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {/* Icon with platform color */}
-                <div
-                  className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: `${link.color}20` }}
+              <TiltCard key={`${link.platform}-${link.username}`}>
+                <motion.a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-card glass flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl w-full group cursor-pointer relative overflow-hidden"
+                  data-platform={link.platform.toLowerCase()}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={(e) => {
+                    addRipple(e)
+                    handleLinkClick(link.url)
+                  }}
+                  animate={isClicked ? { scale: [1, 0.95, 1] } : {}}
                 >
-                  <div style={{ color: link.color }}>
-                    <Icon />
-                  </div>
-                </div>
+                  {/* Ripple effects */}
+                  {ripples.map((ripple) => (
+                    <motion.span
+                      key={ripple.id}
+                      className="absolute bg-white/30 rounded-full pointer-events-none"
+                      style={{
+                        left: ripple.x,
+                        top: ripple.y,
+                        width: 10,
+                        height: 10,
+                        marginLeft: -5,
+                        marginTop: -5,
+                      }}
+                      initial={{ scale: 0, opacity: 1 }}
+                      animate={{ scale: 20, opacity: 0 }}
+                      transition={{ duration: 0.8, ease: 'easeOut' }}
+                    />
+                  ))}
 
-                {/* Text */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">
-                      {link.platform}
-                    </span>
-                    {link.label && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-prsmtech-primary/20 text-prsmtech-light">
-                        {link.label}
+                  {/* Animated background gradient on hover */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: `linear-gradient(135deg, ${link.color}15 0%, transparent 50%)`,
+                    }}
+                  />
+
+                  {/* Shine effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                    initial={{ x: '-100%' }}
+                    animate={isHovered ? { x: '100%' } : { x: '-100%' }}
+                    transition={{ duration: 0.5 }}
+                  />
+
+                  {/* Icon with platform color */}
+                  <motion.div
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center transition-all duration-300 relative z-10"
+                    style={{ backgroundColor: `${link.color}20` }}
+                    animate={isHovered ? {
+                      scale: 1.1,
+                      rotate: [0, -5, 5, 0],
+                    } : { scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div
+                      style={{ color: link.color }}
+                      animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
+                    >
+                      <Icon />
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Text */}
+                  <div className="flex-1 relative z-10">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-white text-sm sm:text-base">
+                        {link.platform}
                       </span>
-                    )}
+                      {link.label && (
+                        <motion.span
+                          className="text-xs px-2 py-0.5 rounded-full bg-prsmtech-primary/20 text-prsmtech-light"
+                          animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+                        >
+                          {link.label}
+                        </motion.span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-400">{link.username}</p>
                   </div>
-                  <p className="text-sm text-gray-400">{link.username}</p>
-                </div>
 
-                {/* Arrow */}
-                <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
-              </motion.a>
+                  {/* Arrow */}
+                  <motion.div
+                    className="relative z-10"
+                    animate={isHovered ? { x: 3, scale: 1.1 } : { x: 0, scale: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 group-hover:text-white transition-colors" />
+                  </motion.div>
+                </motion.a>
+              </TiltCard>
             )
           })}
         </motion.div>
 
         {/* Website CTA */}
-        <motion.a
-          href="https://prsmtechweb.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full p-4 rounded-xl bg-gradient-to-r from-prsmtech-primary to-prsmtech-secondary text-white font-semibold text-center transition-all duration-300 hover:shadow-lg hover:shadow-prsmtech-primary/30 hover:scale-[1.02]"
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <Globe className="w-5 h-5" />
-            Visit PRSMTECH Website
-            <ExternalLink className="w-4 h-4" />
-          </div>
-        </motion.a>
+        <TiltCard>
+          <motion.a
+            href="https://prsmtechweb.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full p-3 sm:p-4 rounded-xl bg-gradient-to-r from-prsmtech-primary to-prsmtech-secondary text-white font-semibold text-center transition-all duration-300 relative overflow-hidden group"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={addRipple}
+          >
+            {/* Animated gradient overlay */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-prsmtech-secondary via-prsmtech-accent to-prsmtech-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+              style={{ backgroundSize: '200% 200%' }}
+            />
+
+            {/* Ripple effects */}
+            {ripples.map((ripple) => (
+              <motion.span
+                key={ripple.id}
+                className="absolute bg-white/30 rounded-full pointer-events-none"
+                style={{
+                  left: ripple.x,
+                  top: ripple.y,
+                  width: 10,
+                  height: 10,
+                  marginLeft: -5,
+                  marginTop: -5,
+                }}
+                initial={{ scale: 0, opacity: 1 }}
+                animate={{ scale: 20, opacity: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              />
+            ))}
+
+            <div className="flex items-center justify-center gap-2 relative z-10">
+              <motion.span
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              >
+                <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
+              </motion.span>
+              <span className="text-sm sm:text-base">Visit PRSMTECH Website</span>
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
+              </motion.span>
+            </div>
+          </motion.a>
+        </TiltCard>
 
         {/* Footer */}
         <motion.footer
-          className="mt-12 text-center text-sm text-gray-500"
+          className="mt-10 sm:mt-12 text-center text-xs sm:text-sm text-gray-500"
           variants={itemVariants}
         >
-          <p>&copy; 2025 PRSMTECH. All rights reserved.</p>
-          <p className="mt-1 text-xs">
-            Made with <span className="text-prsmtech-accent">♥</span> in the USA
-          </p>
+          <motion.p
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            &copy; 2025 PRSMTECH. All rights reserved.
+          </motion.p>
+          <motion.p
+            className="mt-1 text-xs flex items-center justify-center gap-1"
+            whileHover={{ scale: 1.05 }}
+          >
+            Made with{' '}
+            <motion.span
+              animate={{
+                scale: [1, 1.2, 1],
+              }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              <Heart className="w-3 h-3 text-prsmtech-accent fill-prsmtech-accent inline" />
+            </motion.span>
+            {' '}in the USA
+          </motion.p>
         </motion.footer>
       </motion.div>
     </main>

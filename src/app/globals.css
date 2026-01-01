@@ -54,6 +54,20 @@ body {
   }
 }
 
+/* Animated gradient text */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}
+
 /* Glass morphism effect */
 .glass {
   background: rgba(255, 255, 255, 0.05);
@@ -62,9 +76,17 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Enhanced glass on hover */
+.glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
 /* Social card hover glow */
 .social-card {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .social-card:hover {
@@ -72,44 +94,174 @@ body {
   box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.3);
 }
 
+/* Active/tap state for mobile */
+.social-card:active {
+  transform: scale(0.98) translateY(-2px);
+}
+
 /* Twitch glow */
 .social-card[data-platform="twitch"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(145, 70, 255, 0.5);
+  box-shadow: 0 20px 40px -15px rgba(145, 70, 255, 0.5),
+              0 0 60px -20px rgba(145, 70, 255, 0.3);
 }
 
 /* YouTube glow */
 .social-card[data-platform="youtube"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 0, 0, 0.5);
+  box-shadow: 0 20px 40px -15px rgba(255, 0, 0, 0.5),
+              0 0 60px -20px rgba(255, 0, 0, 0.3);
 }
 
 /* TikTok glow */
 .social-card[data-platform="tiktok"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3),
+              0 0 60px -20px rgba(238, 29, 82, 0.3);
 }
 
 /* Instagram glow */
 .social-card[data-platform="instagram"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(228, 64, 95, 0.5);
+  box-shadow: 0 20px 40px -15px rgba(228, 64, 95, 0.5),
+              0 0 60px -20px rgba(131, 58, 180, 0.3);
 }
 
 /* X/Twitter glow */
 .social-card[data-platform="x"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3),
+              0 0 60px -20px rgba(255, 255, 255, 0.2);
 }
 
 /* Threads glow */
 .social-card[data-platform="threads"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3),
+              0 0 60px -20px rgba(255, 255, 255, 0.2);
 }
 
 /* Reddit glow */
 .social-card[data-platform="reddit"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 69, 0, 0.5);
+  box-shadow: 0 20px 40px -15px rgba(255, 69, 0, 0.5),
+              0 0 60px -20px rgba(255, 69, 0, 0.3);
 }
 
 /* GitHub glow */
 .social-card[data-platform="github"]:hover {
-  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.3),
+              0 0 60px -20px rgba(255, 255, 255, 0.2);
+}
+
+/* Slow pulse animation */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glow pulse animation */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Spin slow animation */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Bounce subtle animation */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Scale pulse animation */
+@keyframes scale-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-scale-pulse {
+  animation: scale-pulse 2s ease-in-out infinite;
+}
+
+/* Wiggle animation */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
 }
 
 /* Scrollbar styling */
@@ -135,4 +287,125 @@ a:focus-visible,
 button:focus-visible {
   outline: 2px solid #8b5cf6;
   outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(139, 92, 246, 0.4);
+  color: white;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  /* Reduce blur effects on mobile for performance */
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Smaller blur radius for background orbs */
+  .blur-3xl {
+    filter: blur(48px);
+  }
+
+  /* Touch feedback for mobile */
+  .social-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Faster transitions on mobile */
+  .social-card:active {
+    transition-duration: 0.1s;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse-slow,
+  .animate-float,
+  .animate-glow-pulse,
+  .animate-spin-slow,
+  .animate-bounce-subtle,
+  .animate-scale-pulse,
+  .animate-wiggle,
+  .animate-gradient-x {
+    animation: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass {
+    background: rgba(30, 27, 75, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .social-card:hover {
+    border-color: white;
+  }
+}
+
+/* Dark mode optimizations (already dark, but ensure consistency) */
+@media (prefers-color-scheme: dark) {
+  body {
+    color-scheme: dark;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .glass {
+    background: white;
+    border: 1px solid #ccc;
+  }
+
+  .social-card {
+    break-inside: avoid;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+  main {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .space-y-3 > * + * {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1024px) {
+  .social-card:hover {
+    transform: translateY(-6px);
+  }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+  body {
+    font-size: 18px;
+  }
 }
