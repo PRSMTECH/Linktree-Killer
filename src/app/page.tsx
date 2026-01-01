@@ -9,7 +9,8 @@ import {
   MessageCircle,
   ExternalLink,
   Globe,
-  Sparkles
+  Sparkles,
+  Github
 } from 'lucide-react'
 
 // PRSMTECH Logo from Supabase Storage
@@ -47,8 +48,8 @@ const socialLinks = [
   },
   {
     platform: 'Instagram',
-    username: '@MrJPTech',
-    url: 'https://instagram.com/MrJPTech',
+    username: '@MrJPTech_',
+    url: 'https://instagram.com/MrJPTech_',
     color: '#E4405F',
     icon: Instagram,
     description: 'Personal updates & reels',
@@ -98,6 +99,24 @@ const socialLinks = [
       </svg>
     ),
     description: 'Community discussions',
+  },
+  {
+    platform: 'GitHub',
+    username: '@MrJPTech',
+    url: 'https://github.com/MrJPTech',
+    color: '#181717',
+    icon: Github,
+    description: 'Personal projects & code',
+    label: 'Personal',
+  },
+  {
+    platform: 'GitHub',
+    username: '@PRSMTECH',
+    url: 'https://github.com/PRSMTECH',
+    color: '#181717',
+    icon: Github,
+    description: 'Company repositories',
+    label: 'PRSMTECH',
   },
 ]
 
