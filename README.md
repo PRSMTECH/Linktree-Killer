@@ -23,7 +23,7 @@
 </h3>
 
 <p align="center">
-  <a href="https://links.prsmtechweb.com">View Live Demo</a> •
+  <a href="https://www.prsmtechdemos.com">View Live Demo</a> •
   <a href="#-features">Features</a> •
   <a href="#-quick-start">Quick Start</a> •
   <a href="#-deployment">Deploy</a>
@@ -177,11 +177,9 @@ vercel
 vercel --prod
 ```
 
-### Custom Domain Options
+### Custom Domain
 
-- `links.prsmtechweb.com` (recommended)
-- `social.prsmtechweb.com`
-- `mrjptech.link`
+**Live at:** https://www.prsmtechdemos.com
 
 ---
 

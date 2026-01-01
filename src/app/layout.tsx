@@ -11,6 +11,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.prsmtechdemos.com'),
   title: '@MrJPTech | Jordan Ward - CEO of PRSMTECH',
   description: 'Follow Jordan Ward across all social media platforms. CEO of PRSMTECH - Tech entrepreneur, content creator, and developer.',
   keywords: ['MrJPTech', 'Jordan Ward', 'PRSMTECH', 'Tech CEO', 'Content Creator', 'Developer', 'Twitch', 'YouTube', 'TikTok'],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '@MrJPTech | Jordan Ward - CEO of PRSMTECH',
     description: 'Follow Jordan Ward across all social media platforms. Tech CEO, content creator, and developer.',
-    url: 'https://links.prsmtechweb.com',
+    url: 'https://www.prsmtechdemos.com',
     siteName: 'MrJPTech Links',
     locale: 'en_US',
     type: 'website',

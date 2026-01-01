@@ -22,7 +22,7 @@
 None - Project shipped!
 
 ## Pending
-- [ ] Custom domain setup (links.prsmtechweb.com)
+- [x] Custom domain setup ✅ https://www.prsmtechdemos.com
 - [ ] Analytics integration (optional)
 
 ## Blockers
@@ -41,9 +41,10 @@ None
 | Field | Value |
 |-------|-------|
 | **Environment** | Production |
+| **Live URL** | https://www.prsmtechdemos.com |
 | **Vercel URL** | https://social-links-6tsmr2kqi-prsmtechbuilds.vercel.app |
 | **GitHub Repo** | https://github.com/PRSMTECH/Linktree-Killer |
-| **Commit** | 3372187 |
+| **Commit** | 20d9b28 |
 | **Branch** | master |
 
 **Changes Deployed:**
