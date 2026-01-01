@@ -63,3 +63,46 @@
 **Rationale**: Framer Motion integrates well with React, provides spring physics
 
 **Impact**: Additional ~30KB bundle size, but worth it for polish
+
+---
+
+## Dec 31, 2025 - Enhanced Animation Strategy (v2.0)
+
+**Decision**: Add interactive particle effects, 3D tilt, and typewriter animations
+
+**Context**: User requested more eye-catching, interactive animations optimized for mobile
+
+**Alternatives Considered**:
+1. Add simple CSS hover effects (too basic)
+2. Use Three.js for 3D effects (too heavy)
+3. Framer Motion with custom hooks (selected)
+
+**Rationale**:
+- Framer Motion already in bundle, minimal additional weight
+- Custom hooks (useTypingAnimation, useRipple) keep code organized
+- 3D tilt via useMotionValue/useSpring is lightweight
+
+**Impact**:
+- Bundle increased from ~100KB to ~138KB (+38KB)
+- Rich interactive experience on desktop
+- Graceful fallback on mobile with reduced blur
+
+---
+
+## Dec 31, 2025 - Accessibility-First Animation Approach
+
+**Decision**: Implement prefers-reduced-motion and high-contrast media queries
+
+**Context**: Some users experience motion sickness or need high contrast
+
+**Alternatives Considered**:
+1. Ignore accessibility (bad practice)
+2. Add toggle in UI (complex for single-page)
+3. Use CSS media queries (selected)
+
+**Rationale**: CSS media queries respect user OS/browser settings automatically
+
+**Impact**:
+- All animations disabled for reduced-motion users
+- Enhanced visibility for high-contrast users
+- No additional JavaScript required
